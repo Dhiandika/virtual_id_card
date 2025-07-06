@@ -1,6 +1,3 @@
-Berikut adalah konversi informasi proyek kamu ke dalam format `README.md` yang rapi dan profesional:
-
-````markdown
 # 📇 Proyek Pembuat KTP Virtual
 
 Aplikasi web inovatif berbasis **Flask** yang dirancang untuk memfasilitasi pembuatan **KTP (Kartu Tanda Penduduk) virtual** yang dapat disesuaikan sepenuhnya. Aplikasi ini memungkinkan pengguna untuk:
@@ -42,7 +39,7 @@ Ideal untuk simulasi, proyek kreatif, portofolio, atau sekadar hiburan.
 
 ## 📁 Struktur Proyek
 
-```plaintext
+```
 📦ktp/
  ┣ 📂profile/             # Gambar foto profil acak (jika tidak diunggah manual)
  ┃ ┣ 📜Ander – 02.png     
