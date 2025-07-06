@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembuat KTP Virtual</title>
+    <!-- Tailwind CSS untuk styling cepat -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Custom CSS untuk styling tambahan */
+        body {
+            font-family: 'Inter', sans-serif; /* Menggunakan font modern */
+            background-color: #f0f2f5; /* Warna latar belakang halaman */
+            display: flex;
+            flex-direction: column; /* Mengatur tata letak kolom untuk footer */
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Memastikan body mengisi seluruh tinggi viewport */
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Efek bayangan */
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 20px; /* Jarak antara container dan footer */
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="file"],
+        .form-group select,
+        .form-group input[type="color"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="file"]:focus,
+        .form-group select:focus,
+        .form-group input[type="color"]:focus {
+            outline: none;
+            border-color: #4299e1; /* Warna fokus biru */
+        }
+        .radio-group label {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 20px;
+            cursor: pointer;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 8px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 15px; /* Jarak antar tombol */
+            margin-top: 30px;
+        }
+        .btn-group button {
+            flex: 1; /* Memastikan tombol memiliki lebar yang sama */
+            padding: 14px 25px;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Efek transisi saat hover */
+            border: none;
+        }
+        .btn-preview {
+            background-color: #4CAF50; /* Warna hijau untuk tombol preview */
+            color: white;
+        }
+        .btn-preview:hover {
+            background-color: #45a049;
+            transform: translateY(-2px); /* Efek sedikit naik saat hover */
+        }
+        .btn-download {
+            background-color: #008CBA; /* Warna biru untuk tombol download */
+            color: white;
+        }
+        .btn-download:hover {
+            background-color: #007bb5;
+            transform: translateY(-2px);
+        }
+        /* Styling khusus untuk input color */
+        input[type="color"] {
+            height: 44px; /* Menyesuaikan tinggi dengan input teks */
+            padding: 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        /* Kontainer preview gambar */
+        #ktpPreviewContainer {
+            margin-top: 30px;
+            text-align: center;
+            border: 1px dashed #ccc; /* Border putus-putus */
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            display: none; /* Sembunyikan secara default */
+        }
+        #ktpPreview {
+            max-width: 100%; /* Gambar tidak akan melebihi lebar kontainer */
+            height: auto; /* Mempertahankan rasio aspek */
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        /* Loading spinner CSS */
+        .loading-spinner {
+            border: 4px solid #f3f3f3; /* Light grey */
+            border-top: 4px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto; /* Pusatkan spinner */
+            display: none; /* Sembunyikan secara default */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Footer styling */
+        .footer {
+            margin-top: auto; /* Mendorong footer ke bagian bawah jika konten tidak mengisi seluruh tinggi */
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Pembuat KTP Virtual</h1>
+        
+        <!-- Form dengan ID untuk akses JavaScript, enctype untuk upload file -->
+        <form id="ktpForm" enctype="multipart/form-data" class="space-y-6">
+            <div class="form-group">
+                <label for="nama_penduduk">Nama Penduduk/Daerah (contoh: KUZUPOST):</label>
+                <input type="text" id="nama_penduduk" name="nama_penduduk" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="form-group">
+                <label for="nama">Nama:</label>
+                <input type="text" id="nama" name="nama" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="form-group">
+                <label>Jenis Kelamin:</label>
+                <div class="radio-group mt-1">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="jenis_kelamin" value="Laki-laki" checked>
+                        <span>Laki-laki</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="jenis_kelamin" value="Perempuan">
+                        <span>Perempuan</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="jenis_kelamin" value="Lainnya" id="other_gender_radio">
+                        <span>Lainnya (input manual)</span>
+                    </label>
+                    <input type="text" id="other_gender_input" name="other_jenis_kelamin" class="mt-2 block w-full rounded-md border-gray-300 shadow-sm" placeholder="Masukkan Jenis Kelamin lainnya" style="display: none;">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="domisili">Domisili:</label>
+                <input type="text" id="domisili" name="domisili" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="form-group">
+                <label for="agama">Agama:</label>
+                <input type="text" id="agama" name="agama" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="form-group">
+                <label for="hobi">Hobi:</label>
+                <input type="text" id="hobi" name="hobi" required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+            </div>
+
+            <div class="form-group">
+                <label>Ukuran Kanvas:</label>
+                <div class="radio-group mt-1">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="canvas_size" value="standard" checked>
+                        <span>Standard (900x570)</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="canvas_size" value="full_hd">
+                        <span>Full HD (1920x1080)</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Posisi Judul KTP:</label>
+                <div class="radio-group mt-1">
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="title_position" value="left" checked>
+                        <span>Kiri</span>
+                    </label>
+                    <label class="inline-flex items-center">
+                        <input type="radio" name="title_position" value="center">
+                        <span>Tengah</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="background_color">Warna Latar Belakang KTP:</label>
+                <input type="color" id="background_color" name="background_color" value="#8B8B7A"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+            </div>
+
+            <div class="form-group">
+                <label for="profile_photo">Unggah Foto Profil (PNG/JPG, Opsional):</label>
+                <input type="file" id="profile_photo" name="profile_photo" accept="image/png, image/jpeg"
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50">
+                <p class="text-sm text-gray-500 mt-1">Jika tidak diunggah, foto akan dipilih secara acak dari folder 'profile/'.</p>
+            </div>
+
+            <!-- Grup tombol Preview dan Download -->
+            <div class="btn-group">
+                <button type="button" id="previewKtpBtn" class="btn-preview">Preview KTP</button>
+                <button type="submit" id="downloadKtpBtn" class="btn-download">Unduh KTP</button>
+            </div>
+        </form>
+
+        <!-- Kontainer untuk menampilkan preview gambar KTP -->
+        <div id="ktpPreviewContainer">
+            <h2 class="text-xl font-semibold mb-4 text-gray-700">Preview KTP</h2>
+            <div class="loading-spinner" id="loadingSpinner"></div>
+            <img id="ktpPreview" src="" alt="Preview KTP Anda" style="display: none;">
+        </div>
+    </div>
+
+    <!-- Footer baru -->
+    <footer class="footer">
+        <p>Made by Dhiandika</p>
+        <p>Copyright 2025, All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // Logika JavaScript untuk menampilkan/menyembunyikan input "Jenis Kelamin Lainnya"
+        const otherGenderRadio = document.getElementById('other_gender_radio');
+        const otherGenderInput = document.getElementById('other_gender_input');
+        const genderRadios = document.querySelectorAll('input[name="jenis_kelamin"]');
+
+        genderRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if (this.value === 'Lainnya') {
+                    otherGenderInput.style.display = 'block';
+                    otherGenderInput.setAttribute('required', 'required');
+                } else {
+                    otherGenderInput.style.display = 'none';
+                    otherGenderInput.removeAttribute('required');
+                    otherGenderInput.value = ''; // Bersihkan nilai input jika tidak digunakan
+                }
+            });
+        });
+
+        // Pastikan state awal input "Lainnya" sudah benar saat halaman dimuat
+        if (otherGenderRadio.checked) {
+            otherGenderInput.style.display = 'block';
+            otherGenderInput.setAttribute('required', 'required');
+        }
+
+        // Logika utama untuk fitur preview dan download
+        const ktpForm = document.getElementById('ktpForm');
+        const previewKtpBtn = document.getElementById('previewKtpBtn');
+        const downloadKtpBtn = document.getElementById('downloadKtpBtn');
+        const ktpPreviewContainer = document.getElementById('ktpPreviewContainer');
+        const ktpPreview = document.getElementById('ktpPreview');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Fungsi untuk menampilkan spinner loading
+        function showLoading() {
+            loadingSpinner.style.display = 'block';
+            ktpPreview.style.display = 'none'; // Sembunyikan gambar preview saat loading
+            ktpPreviewContainer.style.display = 'block'; // Pastikan kontainer preview terlihat
+        }
+
+        // Fungsi untuk menyembunyikan spinner loading
+        function hideLoading() {
+            loadingSpinner.style.display = 'none';
+        }
+
+        // Event listener untuk tombol 'Preview KTP'
+        previewKtpBtn.addEventListener('click', async function(event) {
+            event.preventDefault(); // Mencegah form di-submit secara default
+
+            showLoading(); // Tampilkan spinner
+
+            const formData = new FormData(ktpForm); // Buat FormData dari form
+            
+            // Logika untuk menangani input jenis kelamin 'Lainnya' sebelum dikirim
+            if (formData.get('jenis_kelamin') === 'Lainnya') {
+                const otherGenderValue = formData.get('other_jenis_kelamin');
+                if (otherGenderValue) {
+                    formData.set('jenis_kelamin', otherGenderValue); // Ganti nilai 'Lainnya' dengan input manual
+                } else {
+                    alert('Harap masukkan Jenis Kelamin lainnya.');
+                    hideLoading();
+                    return; // Hentikan proses jika input kosong
+                }
+            }
+            formData.delete('other_jenis_kelamin'); // Hapus field sementara ini
+
+            try {
+                // Mengirim data form ke endpoint preview Flask
+                const response = await fetch('/generate_ktp_preview', {
+                    method: 'POST',
+                    body: formData // Mengirim FormData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json(); // Mengambil respons JSON
+                if (data.image) {
+                    ktpPreview.src = data.image; // Set sumber gambar base64
+                    ktpPreview.style.display = 'block'; // Tampilkan gambar preview
+                    ktpPreviewContainer.style.display = 'block'; // Pastikan kontainer preview terlihat
+                } else {
+                    alert('Gagal mendapatkan preview KTP.');
+                }
+            } catch (error) {
+                console.error('Error generating KTP preview:', error);
+                alert('Terjadi kesalahan saat membuat preview KTP. Silakan coba lagi.');
+            } finally {
+                hideLoading(); // Sembunyikan spinner setelah selesai
+            }
+        });
+
+        // Event listener untuk tombol 'Unduh KTP'
+        downloadKtpBtn.addEventListener('click', async function(event) {
+            event.preventDefault(); // Mencegah form di-submit secara default
+
+            // Kita akan submit form secara manual ke endpoint download
+            const formData = new FormData(ktpForm);
+
+            // Logika yang sama untuk menangani input jenis kelamin 'Lainnya'
+            if (formData.get('jenis_kelamin') === 'Lainnya') {
+                const otherGenderValue = formData.get('other_jenis_kelamin');
+                if (otherGenderValue) {
+                    formData.set('jenis_kelamin', otherGenderValue);
+                } else {
+                    alert('Harap masukkan Jenis Kelamin lainnya.');
+                    return;
+                }
+            }
+            formData.delete('other_jenis_kelamin');
+
+            try {
+                // Mengirim data form ke endpoint download Flask
+                const response = await fetch('/download_ktp', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const blob = await response.blob(); // Dapatkan respons sebagai Blob
+                const downloadUrl = window.URL.createObjectURL(blob); // Buat URL objek
+
+                // Dapatkan nama file dari header Content-Disposition
+                const contentDisposition = response.headers.get('Content-Disposition');
+                let filename = 'ktp_virtual.png'; // Nama file default
+                if (contentDisposition && contentDisposition.indexOf('attachment') !== -1) {
+                    const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+                    if (filenameMatch && filenameMatch[1]) {
+                        filename = filenameMatch[1];
+                    }
+                }
+
+                // Buat elemen <a> sementara dan klik untuk memulai unduhan
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                a.remove(); // Hapus elemen <a>
+                window.URL.revokeObjectURL(downloadUrl); // Bersihkan URL objek
+            } catch (error) {
+                console.error('Error downloading KTP:', error);
+                alert('Terjadi kesalahan saat mengunduh KTP. Silakan coba lagi.');
+            }
+        });
+    </script>
+</body>
+</html>
