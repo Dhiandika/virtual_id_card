@@ -1,3 +1,16 @@
+
+## 🖼️ Tampilan Antarmuka & Output
+
+### 🧭 Antarmuka Web
+![Tampilan Website](website.png)
+
+### 🧾 Contoh Desain Referensi
+![Contoh Desain KTP](refrensi.png)
+
+### 📤 Contoh Output KTP Virtual
+![Hasil Output KTP](ktp_virtual.png)
+
+
 # 📇 Proyek Pembuat KTP Virtual
 
 Aplikasi web inovatif berbasis **Flask** yang dirancang untuk memfasilitasi pembuatan **KTP (Kartu Tanda Penduduk) virtual** yang dapat disesuaikan sepenuhnya. Aplikasi ini memungkinkan pengguna untuk:
