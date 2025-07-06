@@ -1,0 +1,13 @@
+📦ktp
+ ┣ 📂profile
+ ┃ ┣ 📜Ander – 02.png
+ ┃ ┗ 📜Wumpus.png
+ ┣ 📂templates
+ ┃ ┗ 📜index.html
+ ┣ 📜.gitattributes
+ ┣ 📜app.py
+ ┣ 📜main.py
+ ┣ 📜README.md
+ ┣ 📜refrensi.png
+ ┣ 📜requirements.txt
+ ┗ 📜website.png
