@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/app.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "templates/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/templates/index.html"
+    },
+    {
+      "src": "/generate_ktp_preview",
+      "dest": "/api/app.py"
+    },
+    {
+      "src": "/download_ktp",
+      "dest": "/api/app.py"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/app.py"
+    }
+  ]
+}
